@@ -7,4 +7,4 @@ public record class CreateScreeningDto(
     DateTime StartSceening,
     DateTime FinishScreening,
     int MovieId
-);
+    );

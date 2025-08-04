@@ -8,8 +8,13 @@ public class CinemaSolutionContext(DbContextOptions<CinemaSolutionContext> optio
     public DbSet<Movie> Movies => Set<Movie>();
     public DbSet<Director> Directors => Set<Director>();
     public DbSet<Screening> Screenings => Set<Screening>();
+    public DbSet<User> Users => Set<User>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .HasIndex(user => user.Name)
+            .IsUnique();
+
         modelBuilder.Entity<Director>().HasData(
             new { Id = 1, Name = "Luca", LastName = "Stone" },
             new { Id = 2, Name = "Mateus", LastName = "Silver" },

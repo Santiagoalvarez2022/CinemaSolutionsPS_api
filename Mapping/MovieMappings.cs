@@ -1,6 +1,6 @@
-using CinemaSolutionApi.Dtos;
 using CinemaSolutionApi.Dtos.Movie;
 using CinemaSolutionApi.Entities;
+using CinemaSolutionApi.Dtos;
 
 namespace CinemaSolutionApi.Mapping;
 
