@@ -4,7 +4,7 @@ namespace CinemaSolutionApi.Dtos.Screening;
 public record class ScreeningDto(
     int Id,
     decimal Price,
-    DateTime StartSceening,
+    DateTime StartScreening,
     DateTime FinishScreening,
     int MovieId
 );

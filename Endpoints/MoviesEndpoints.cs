@@ -1,5 +1,4 @@
 using CinemaSolutionApi.Data;
-using CinemaSolutionApi.Entities;
 using Microsoft.EntityFrameworkCore;
 using CinemaSolutionApi.Mapping;
 
