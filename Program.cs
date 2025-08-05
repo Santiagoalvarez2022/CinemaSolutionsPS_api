@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CinemaSolutionContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("CinemaSolution")));

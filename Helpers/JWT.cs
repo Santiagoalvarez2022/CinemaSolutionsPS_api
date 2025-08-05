@@ -10,7 +10,6 @@ namespace CinemaSolutionApi.Helpers;
 public class JWT
 {
 	private readonly IConfiguration _configuration;
-
 	public JWT(IConfiguration configuration)
 	{
 		_configuration = configuration;

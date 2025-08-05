@@ -3,6 +3,7 @@ using System;
 using CinemaSolutionApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CinemaSolutionApi.Data.Migrations
 {
     [DbContext(typeof(CinemaSolutionContext))]
-    partial class CinemaSolutionContextModelSnapshot : ModelSnapshot
+    [Migration("20250805032203_FixScreeningDates")]
+    partial class FixScreeningDates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

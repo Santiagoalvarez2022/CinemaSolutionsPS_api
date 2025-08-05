@@ -20,7 +20,6 @@ public static class MoviesEndpoints
 
         });
 
-        //necesito una ruta que traiga la pelicula por id con todas sus funciones
         group.MapGet("/{id}", async (int id, CinemaSolutionContext dbContext) =>
         {
             var movie = await dbContext.Movies
@@ -32,7 +31,6 @@ public static class MoviesEndpoints
             {
                 return Results.NotFound(); // Si no se encuentra la película
             }
-            // Si se encuentra, mapea a tu MovieDetailsDto y devuelve un 200 OK
             return Results.Ok(movie.ToDetailsDto()); // método de mapeo ToDetailsDto
         });
 

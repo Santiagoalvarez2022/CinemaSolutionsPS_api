@@ -1,7 +1,6 @@
 using CinemaSolutionApi.Dtos.Movie;
 using CinemaSolutionApi.Entities;
-using CinemaSolutionApi.Dtos;
-
+using CinemaSolutionApi.Dtos.Screening;
 namespace CinemaSolutionApi.Mapping;
 
 public static class MovieMapping

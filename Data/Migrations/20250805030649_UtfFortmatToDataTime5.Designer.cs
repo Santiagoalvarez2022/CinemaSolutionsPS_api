@@ -3,6 +3,7 @@ using System;
 using CinemaSolutionApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CinemaSolutionApi.Data.Migrations
 {
     [DbContext(typeof(CinemaSolutionContext))]
-    partial class CinemaSolutionContextModelSnapshot : ModelSnapshot
+    [Migration("20250805030649_UtfFortmatToDataTime5")]
+    partial class UtfFortmatToDataTime5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,7 +145,7 @@ namespace CinemaSolutionApi.Data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("FinishScreening")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MovieId")
                         .HasColumnType("integer");
@@ -151,7 +154,7 @@ namespace CinemaSolutionApi.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("StartScreening")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
