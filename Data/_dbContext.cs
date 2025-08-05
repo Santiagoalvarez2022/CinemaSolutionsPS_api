@@ -13,9 +13,6 @@ public class CinemaSolutionContext(DbContextOptions<CinemaSolutionContext> optio
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .HasIndex(user => user.Name)
-            .IsUnique();
 
         modelBuilder.Entity<User>()
             .HasIndex(user => user.Username)

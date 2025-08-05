@@ -3,6 +3,7 @@ using CinemaSolutionApi.Entities;
 using CinemaSolutionApi.Data;
 using CinemaSolutionApi.Mapping;
 using CinemaSolutionApi.Helpers;
+using CinemaSolutionApi.Services;
 
 namespace CinemaSolutionApi.Endpoints;
 
@@ -14,13 +15,26 @@ public static class UsersEndpoints
 
         group.MapPost("/register", (CreateUserDto newUser, CinemaSolutionContext dbContext) =>
         {
+            var AuthService = new AuthService();
+            if (!AuthService.ValidateFields(newUser, out string errorMsg))
+            {
+                return Results.BadRequest(errorMsg);
+            }
+            if (!AuthService.ValidateEmail(newUser.Email))
+            {
+                return Results.BadRequest("The email must be like example@domain.com");
+            }
+            if (!AuthService.ValidatePassword(newUser.Password))
+            {
+                return Results.BadRequest("The password must have at least 8 characters, one lowercase letter, one uppercase letter, one number and one special character.");
+            }
 
             var user = newUser.ToEntity();
             user.Password = PasswordHasher.Hash(newUser.Password);
             dbContext.Users.Add(user);
             dbContext.SaveChanges();
 
-            return Results.Ok(user.ToDto());
+            return Results.Created("", user.UserResponseDto());
         });
 
         group.MapPost("/login", (LogInDto user, CinemaSolutionContext dbContext, JWT Jwt) =>
@@ -33,13 +47,12 @@ public static class UsersEndpoints
 
             if (FindUser is null)
             {
-                return Results.BadRequest("User not found.");
+                return Results.NotFound("User not found.");
             }
 
             if (!PasswordHasher.Validate(user.Password, FindUser.Password))
             {
                 return Results.BadRequest("Icorrect Password");
-
             }
 
             var token = Jwt.CreateToken(FindUser);
@@ -50,6 +63,8 @@ public static class UsersEndpoints
                 username = user.Username,
             });
         });
+
+
         return group;
     }
 };

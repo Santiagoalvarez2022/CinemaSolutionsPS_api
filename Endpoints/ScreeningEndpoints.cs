@@ -17,21 +17,6 @@ public static class ScreeningEndpoints
         {
             try
             {
-                if (newScreening.Price == null
-                   || newScreening.StartScreening == null
-                   || newScreening.FinishScreening == null
-                   || newScreening.MovieId == null)
-                {
-                    return Results.BadRequest("Incomplete required information, check that all fields are completed");
-                }
-
-                if (newScreening.Price <= 0) return Results.BadRequest("The price must be positive and greater than 0. ");
-
-                var now = DateTime.Now;
-                if (newScreening.StartScreening < now) return Results.BadRequest("This date is not valid because it is in the past, try again. ");
-
-                if (newScreening.StartScreening == newScreening.FinishScreening) return Results.BadRequest("The startscreening and finishscreening can't be the same");
-
                 var screenings = await dbContext.Screenings
                 .Include(s => s.Movie)
                 .Where(s => s.StartScreening.Date == newScreening.StartScreening.Date)
@@ -39,9 +24,12 @@ public static class ScreeningEndpoints
 
                 var ServiceScreening = new ServiceScreening(screenings);
 
+                if (!ServiceScreening.ValidateFields(newScreening, out string? errorMsg)) return Results.BadRequest(errorMsg);
+
                 if (ServiceScreening.ValidateOverlap(newScreening)) return Results.BadRequest("Sorry, the time slot you've chosen is already taken by another movie");
 
                 var movie = await dbContext.Movies.FindAsync(newScreening.MovieId);
+
                 if (movie == null) return Results.BadRequest("Movie not found");
 
                 var newScreeningDate = newScreening.StartScreening.Date;
@@ -74,27 +62,13 @@ public static class ScreeningEndpoints
                 var ScreeningFound = await dbContext.Screenings.FindAsync(id);
                 if (ScreeningFound == null) return Results.NotFound("Screening not found");
 
-                if (updatedScreening.Price == null
-                   || updatedScreening.StartScreening == null
-                   || updatedScreening.FinishScreening == null
-                   || updatedScreening.MovieId == null)
-                {
-                    return Results.BadRequest("Incomplete required information, check that all fields are completed");
-                }
-
-                if (updatedScreening.Price <= 0) return Results.BadRequest("The price must be positive and greater than 0. ");
-
-                var now = DateTime.Now;
-                if (updatedScreening.StartScreening < now) return Results.BadRequest("This date is not valid because it is in the past, try again. ");
-
-                if (updatedScreening.StartScreening == updatedScreening.FinishScreening) return Results.BadRequest("The startscreening and finishscreening can't be the same");
-
                 var screenings = await dbContext.Screenings
                 .Include(s => s.Movie)
                 .Where(s => s.Id != id && s.StartScreening.Date == updatedScreening.StartScreening.Date)
                 .ToListAsync();
-
                 var ServiceScreening = new ServiceScreening(screenings);
+
+                if (!ServiceScreening.ValidateFields(updatedScreening, out string? errorMsg)) return Results.BadRequest(errorMsg);
 
                 if (ServiceScreening.ValidateOverlap(updatedScreening)) return Results.BadRequest("Sorry, the time slot you've chosen is already taken by another movie");
 
@@ -108,20 +82,19 @@ public static class ScreeningEndpoints
                     return Results.BadRequest("Sorry, the limit of international film screenings per day has been reached. Try a different date");
                 }
 
-
                 if (ServiceScreening.ValidateDirectorDailyLimitReached(movie, newScreeningDate))
                 {
                     return Results.BadRequest("Sorry, the director of this film reached the limit of daily movie screenings. Try a different date");
                 }
 
-                ScreeningFound.Price = (decimal)updatedScreening.Price;
+                ScreeningFound.Price = (decimal)updatedScreening.Price!;
                 ScreeningFound.StartScreening = updatedScreening.StartScreening;
-                ScreeningFound.FinishScreening = (DateTime)updatedScreening.FinishScreening;
-                ScreeningFound.MovieId = (int)updatedScreening.MovieId;
+                ScreeningFound.FinishScreening = (DateTime)updatedScreening.FinishScreening!;
+                ScreeningFound.MovieId = (int)updatedScreening.MovieId!;
                 ScreeningFound.Movie = movie;
 
                 await dbContext.SaveChangesAsync();
-                return Results.Ok(ScreeningFound.ToDto());
+                return Results.Created("", ScreeningFound.ToDto());
 
             }
             catch (Exception ex)

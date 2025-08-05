@@ -17,10 +17,9 @@ public static class UserMapping
         };
     }
 
-    public static UserResponseDto ToDto(this User user)
+    public static UserResponseDto UserResponseDto(this User user)
     {
         return new(
-            user.Email,
             user.Username
         );
     }
