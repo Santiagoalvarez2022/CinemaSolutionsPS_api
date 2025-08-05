@@ -17,6 +17,14 @@ public class CinemaSolutionContext(DbContextOptions<CinemaSolutionContext> optio
             .HasIndex(user => user.Name)
             .IsUnique();
 
+        modelBuilder.Entity<User>()
+            .HasIndex(user => user.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(user => user.Email)
+            .IsUnique();
+
         modelBuilder.Entity<Director>().HasData(
             new { Id = 1, Name = "Luca", LastName = "Stone" },
             new { Id = 2, Name = "Mateus", LastName = "Silver" },
