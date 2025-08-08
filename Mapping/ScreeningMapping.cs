@@ -9,11 +9,12 @@ public static class ScreeningMapping
     {
         return new Screening()
         {
-            Price = screening.Price ?? throw new Exception("Price is null") ,
-            StartScreening  = screening.StartScreening,
+            Price = screening.Price ?? throw new Exception("Price is null"),
+            StartScreening = screening.StartScreening,
             FinishScreening = screening.FinishScreening ?? throw new Exception("FinishScreening is null"),
-            MovieId = screening.MovieId ?? throw new Exception("MovieId is null"),
         };
+
+
     }
 
     public static ScreeningDto ToDto(this Screening screening)
@@ -23,7 +24,7 @@ public static class ScreeningMapping
             screening.Price,
             screening.StartScreening,
             screening.FinishScreening,
-            screening.MovieId
+            screening.Movie!.Id
         );
     }
 }

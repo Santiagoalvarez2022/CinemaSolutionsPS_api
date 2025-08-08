@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace CinemaSolutionApi.Entities;
 
 public class Screening
@@ -6,6 +8,6 @@ public class Screening
     public decimal Price { get; set; }
     public DateTime StartScreening { get; set; }
     public DateTime FinishScreening { get; set; }
-    public int MovieId { get; set; }
+    [ForeignKey("MovieId")]
     public Movie? Movie { get; set; }
 }

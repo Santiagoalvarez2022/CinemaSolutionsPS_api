@@ -1,6 +1,6 @@
 using CinemaSolutionApi.Data;
-using CinemaSolutionApi.Endpoints;
 using CinemaSolutionApi.Helpers;
+using CinemaSolutionApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +19,7 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod();
                       });
 });
+builder.Services.AddControllers();
 builder.Services.AddDbContext<CinemaSolutionContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("CinemaSolution")));
 builder.Services.AddEndpointsApiExplorer();
@@ -44,18 +45,33 @@ builder.Services.AddAuthentication(config =>
     };
 });
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<DatabaseSeeder>();
+builder.Services.AddScoped<MovieService>();
+builder.Services.AddScoped<ScreeningService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<JWT>();
+
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    await seeder.SeedAsync();
+}
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.RoutePrefix = string.Empty;
+    });
 }
+
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapUsersEndpoints();
-app.MapScreeningEndpoints();
-app.MapMoviesEndpoints();
+
+app.MapControllers();
 app.MigrateDb();
 app.Run();

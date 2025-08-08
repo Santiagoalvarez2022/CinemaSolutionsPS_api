@@ -26,7 +26,7 @@ public static class MovieMapping
             movie.Duration,
             movie.IsInternational,
             movie.Image,
-            movie.DirectorId,
+            movie.Director.Id,
             Director,
             [.. movie.Screenings.Select(s => s.ToDto())]
         );

@@ -1,67 +1,118 @@
-using CinemaSolutionApi.Entities;
 using CinemaSolutionApi.Dtos.Screening;
+using CinemaSolutionApi.Entities;
+using CinemaSolutionApi.Data;
+using Microsoft.EntityFrameworkCore;
+using CinemaSolutionApi.Helpers;
+using CinemaSolutionApi.Mapping;
 
 namespace CinemaSolutionApi.Services;
 
-public class ServiceScreening
+public class ScreeningService
 {
-    private readonly List<Screening> _screenings;
-
-    public ServiceScreening(List<Screening> screenings)
+    private readonly CinemaSolutionContext _dbContext;
+    public ScreeningService(CinemaSolutionContext dbContext)
     {
-        _screenings = screenings;
-    }
-    public bool ValidateOverlap(CreateScreeningDto screening)
-    {
-        return _screenings.Any(s => s.StartScreening < screening.FinishScreening && screening.StartScreening < s.FinishScreening);
+        _dbContext = dbContext;
     }
 
-    public bool ValidateIsInternational(DateTime newScreeningDate)
+    public async Task<bool> DeleteScreening(int id)
     {
-        var internationalScreeningsToday = _screenings
-            .Where(s => s.Movie.IsInternational && s.StartScreening >= newScreeningDate && s.StartScreening < newScreeningDate.AddDays(1))
-            .Count();
-        return internationalScreeningsToday >= 8;
+        var screening = await _dbContext.Screenings.FirstOrDefaultAsync(s => s.Id == id);
+        if (screening is null) return false;
+        _dbContext.Screenings.Remove(screening);
+        await _dbContext.SaveChangesAsync();
+        return true;
     }
 
-    public bool ValidateDirectorDailyLimitReached(Movie movie, DateTime newScreeningDate)
+    public async Task<ScreeningDto> AddScreening(CreateScreeningDto newScreening)
     {
-        var amountDirectorPerDay = _screenings
-            .Where(s => s.Movie?.DirectorId == movie.DirectorId &&
+        ValidateFields(newScreening);
+        await ValidateOverlap(newScreening, null);
+
+        var movie = await MovieExists(newScreening.MovieId!.Value);
+        var newScreeningDate = newScreening.StartScreening.Date;
+        if (movie.IsInternational)
+        {
+            await ValidateIsInternational(newScreeningDate, null);
+        }
+        await ValidateDirectorDailyLimitReached(movie.Director.Id, newScreeningDate, null);
+
+        var screening = newScreening.ToEntity();
+        screening.Movie = movie;
+
+        await _dbContext.Screenings.AddAsync(screening);
+        await _dbContext.SaveChangesAsync();
+        return screening.ToDto();
+    }
+    public async Task<ScreeningDto> ModifyScreening(int id, CreateScreeningDto newScreening)
+    {
+        var screening = await _dbContext.Screenings.FirstOrDefaultAsync(s => s.Id == id);
+        if (screening == null) throw new ValidationEx("Screening not found.");
+
+        ValidateFields(newScreening);
+        await ValidateOverlap(newScreening, id);
+
+        var movie = await MovieExists(newScreening.MovieId!.Value);
+        var date = newScreening.StartScreening.Date;
+
+        if (movie.IsInternational)
+        {
+            await ValidateIsInternational(date, id);
+        }
+
+        await ValidateDirectorDailyLimitReached(movie.Director.Id, date, id);
+
+        screening.Price = (decimal)newScreening.Price!;
+        screening.StartScreening = newScreening.StartScreening;
+        screening.FinishScreening = (DateTime)newScreening.FinishScreening!;
+        screening.Movie = movie;
+
+        await _dbContext.SaveChangesAsync();
+        return screening.ToDto();
+    }
+
+    public async Task<Movie> MovieExists(int id)
+    {
+        var movie = await _dbContext.Movies
+            .Include(m => m.Director)
+            .FirstOrDefaultAsync(m => m.Id == id) ?? throw new ValidationEx("Movie not found.");
+        return movie;
+    }
+    public async Task ValidateOverlap(CreateScreeningDto screening, int? id)
+    {
+        var result = await _dbContext.Screenings
+            .Where(s => s.Id != id && s.StartScreening.Date == screening.StartScreening.Date)
+            .AnyAsync(s => s.StartScreening < screening.FinishScreening && screening.StartScreening < s.FinishScreening);
+        if (result) throw new ValidationEx("Sorry, the time slot you've chosen is already taken by another movie");
+    }
+
+    public async Task ValidateIsInternational(DateTime newScreeningDate, int? id)
+    {
+        var internationalScreeningsToday = await _dbContext.Screenings
+            .Where(s => s.Id != id && s.Movie!.IsInternational && s.StartScreening >= newScreeningDate && s.StartScreening < newScreeningDate.AddDays(1))
+            .CountAsync();
+        if (internationalScreeningsToday >= 8) throw new ValidationEx("Sorry, the limit of international film screenings per day has been reached. Try a different date");
+    }
+
+    public async Task ValidateDirectorDailyLimitReached(int DirectorId, DateTime newScreeningDate, int? id)
+    {
+        var amountDirectorPerDay = await _dbContext.Screenings
+            .Where(s => s.Id != id && s.Movie!.Director.Id == DirectorId &&
             s.StartScreening >= newScreeningDate &&
             s.StartScreening < newScreeningDate.AddDays(1))
-            .Count();
-        return amountDirectorPerDay >= 10;
+            .CountAsync();
+        if (amountDirectorPerDay >= 10) throw new ValidationEx("Sorry, the director of this film reached the limit of daily movie screenings. Try a different date");
     }
 
-    public bool ValidateFields(CreateScreeningDto screening, out string? errorMsg)
+    public void ValidateFields(CreateScreeningDto screening)
     {
-        if (screening.Price == null || screening.StartScreening == null || screening.FinishScreening == null || screening.MovieId == null)
-        {
-            errorMsg = "Incomplete required information, check that all fields are completed";
-            return false;
-        }
+        if (screening.Price == null || screening.FinishScreening == null || screening.MovieId == null) throw new ValidationEx("Incomplete required information, check that all fields are completed");
 
-        if (screening.Price <= 0)
-        {
-            errorMsg = "The price must be positive and greater than 0";
-            return false;
-        }
+        if (screening.Price <= 0) throw new ValidationEx("The price must be positive and greater than 0");
 
         var now = DateTime.Now;
-        if (screening.StartScreening < now)
-        {
-            errorMsg = "This date is not valid because it is in the past, try again";
-            return false;
-        }
+        if (screening.StartScreening < now) throw new ValidationEx("This date is not valid because it is in the past, try again");
 
-        if (screening.StartScreening == screening.FinishScreening)
-        {
-            errorMsg = "The startscreening and finishscreening can't be the same";
-            return false;
-        }
-
-        errorMsg = null;
-        return true;
+        if (screening.StartScreening == screening.FinishScreening) throw new ValidationEx("The startscreening and finishscreening can't be the same");
     }
 }
