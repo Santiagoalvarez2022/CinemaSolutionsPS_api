@@ -1,4 +1,4 @@
-using CinemaSolutionApi.Dtos;
+using CinemaSolutionApi.Dtos.Screening;
 using CinemaSolutionApi.Entities;
 
 namespace CinemaSolutionApi.Mapping;
@@ -9,11 +9,12 @@ public static class ScreeningMapping
     {
         return new Screening()
         {
-            Price = screening.Price,
-            StartScreening = screening.StartSceening,
-            FinishScreening = screening.FinishScreening,
-            MovieId = screening.MovieId,
+            Price = screening.Price ?? throw new Exception("Price is null"),
+            StartScreening = screening.StartScreening,
+            FinishScreening = screening.FinishScreening ?? throw new Exception("FinishScreening is null"),
         };
+
+
     }
 
     public static ScreeningDto ToDto(this Screening screening)
@@ -23,7 +24,7 @@ public static class ScreeningMapping
             screening.Price,
             screening.StartScreening,
             screening.FinishScreening,
-            screening.MovieId
+            screening.Movie!.Id
         );
     }
 }

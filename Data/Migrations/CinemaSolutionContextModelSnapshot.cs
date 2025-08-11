@@ -41,26 +41,6 @@ namespace CinemaSolutionApi.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Directors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LastName = "Stone",
-                            Name = "Luca"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            LastName = "Silver",
-                            Name = "Mateus"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            LastName = "Rivera",
-                            Name = "Pedro"
-                        });
                 });
 
             modelBuilder.Entity("CinemaSolutionApi.Entities.Movie", b =>
@@ -93,44 +73,6 @@ namespace CinemaSolutionApi.Data.Migrations
                     b.HasIndex("DirectorId");
 
                     b.ToTable("Movies");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DirectorId = 1,
-                            Duration = 115,
-                            Image = "https://i.ibb.co/9Hg54sMZ/Gemini-Generated-Image-wdz3jywdz3jywdz3.png",
-                            IsInternational = false,
-                            Title = "The Secret of the Mirror"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DirectorId = 2,
-                            Duration = 98,
-                            Image = "https://i.ibb.co/0pf183VG/Gemini-Generated-Image-wdz3jywdz3jywdz3-1.png",
-                            IsInternational = false,
-                            Title = "The Forgotten Shadow"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DirectorId = 3,
-                            Duration = 142,
-                            Image = "https://i.ibb.co/HDnnNd5t/Gemini-Generated-Image-wdz3jywdz3jywdz3-2.png",
-                            IsInternational = true,
-                            Title = "Journey to the Star Heart"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DirectorId = 1,
-                            Duration = 115,
-                            Image = "https://i.ibb.co/8DJdFYwJ/unnamed-6.png",
-                            IsInternational = false,
-                            Title = "The Secret of the Mirror 2"
-                        });
                 });
 
             modelBuilder.Entity("CinemaSolutionApi.Entities.Screening", b =>
@@ -142,22 +84,61 @@ namespace CinemaSolutionApi.Data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("FinishScreening")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("MovieId")
+                    b.Property<int?>("MovieId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("StartScreening")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MovieId");
 
                     b.ToTable("Screenings");
+                });
+
+            modelBuilder.Entity("CinemaSolutionApi.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("CinemaSolutionApi.Entities.Movie", b =>
@@ -175,9 +156,7 @@ namespace CinemaSolutionApi.Data.Migrations
                 {
                     b.HasOne("CinemaSolutionApi.Entities.Movie", "Movie")
                         .WithMany("Screenings")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MovieId");
 
                     b.Navigation("Movie");
                 });

@@ -1,7 +1,6 @@
-using CinemaSolutionApi.Dtos;
 using CinemaSolutionApi.Dtos.Movie;
 using CinemaSolutionApi.Entities;
-
+using CinemaSolutionApi.Dtos.Screening;
 namespace CinemaSolutionApi.Mapping;
 
 public static class MovieMapping
@@ -27,7 +26,7 @@ public static class MovieMapping
             movie.Duration,
             movie.IsInternational,
             movie.Image,
-            movie.DirectorId,
+            movie.Director.Id,
             Director,
             [.. movie.Screenings.Select(s => s.ToDto())]
         );

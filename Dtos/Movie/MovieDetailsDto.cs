@@ -1,4 +1,6 @@
+using CinemaSolutionApi.Dtos.Screening;
 namespace CinemaSolutionApi.Dtos.Movie;
+
 
 public record class MovieDetailsDto(
     int Id,

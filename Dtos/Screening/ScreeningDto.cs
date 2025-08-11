@@ -1,10 +1,10 @@
-namespace CinemaSolutionApi.Dtos;
+namespace CinemaSolutionApi.Dtos.Screening;
 
 //this class is to send to client.
-public record class ScreeningDetailsDto(
+public record class ScreeningDto(
     int Id,
     decimal Price,
-    DateTime StartSceening,
+    DateTime StartScreening,
     DateTime FinishScreening,
     int MovieId
 );

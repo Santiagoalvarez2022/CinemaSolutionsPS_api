@@ -1,4 +1,4 @@
-namespace CinemaSolutionApi.Dtos;
+namespace CinemaSolutionApi.Dtos.Movie;
 
 public record class MovieDto(
     int Id,

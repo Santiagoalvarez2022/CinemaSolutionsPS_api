@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace CinemaSolutionApi.Entities;
 
 public class Movie
@@ -7,7 +9,7 @@ public class Movie
     public int Duration { get; set; }
     public bool IsInternational { get; set; }
     public string Image { get; set; } = "";
-    public int DirectorId { get; set; }
+    [ForeignKey("DirectorId")]
     public required Director Director { get; set; }
-    public ICollection<Screening> Screenings { get; set; } = new List<Screening>();
+    public List<Screening> Screenings { get; set; } = new List<Screening>();
 }
