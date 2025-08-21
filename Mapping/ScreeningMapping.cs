@@ -13,8 +13,6 @@ public static class ScreeningMapping
             StartScreening = screening.StartScreening,
             FinishScreening = screening.FinishScreening ?? throw new Exception("FinishScreening is null"),
         };
-
-
     }
 
     public static ScreeningDto ToDto(this Screening screening)

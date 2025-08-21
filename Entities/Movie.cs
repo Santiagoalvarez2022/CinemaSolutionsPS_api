@@ -10,6 +10,6 @@ public class Movie
     public bool IsInternational { get; set; }
     public string Image { get; set; } = "";
     [ForeignKey("DirectorId")]
-    public required Director Director { get; set; }
+    public Director Director { get; set; }
     public List<Screening> Screenings { get; set; } = new List<Screening>();
 }

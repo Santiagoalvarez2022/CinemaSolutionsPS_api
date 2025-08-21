@@ -6,5 +6,6 @@ public record class MovieListDto(
     int Duration,
     bool IsInternational,
     string Image,
-    string Director
+    string Director,
+    int IdDirector
 );

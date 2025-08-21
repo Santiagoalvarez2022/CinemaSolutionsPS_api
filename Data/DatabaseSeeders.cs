@@ -1,12 +1,17 @@
 using CinemaSolutionApi.Data;
 using CinemaSolutionApi.Entities;
+using Microsoft.AspNetCore.Identity;
 public class DatabaseSeeder
 {
     private readonly CinemaSolutionContext _context;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<User> _userManager;
 
-    public DatabaseSeeder(CinemaSolutionContext context)
+    public DatabaseSeeder(CinemaSolutionContext context, RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
     {
         _context = context;
+        _roleManager = roleManager;
+        _userManager = userManager;
     }
 
 

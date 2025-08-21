@@ -53,7 +53,7 @@ namespace CinemaSolutionApi.Controllers
             try
             {
                 var result = await _screeningService.ModifyScreening(id, screening);
-                return Ok(result);
+                return Ok();
             }
             catch (ValidationEx ex)
             {

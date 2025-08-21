@@ -10,5 +10,5 @@ public record class MovieDetailsDto(
     string Image,
     int DirectorId,
     string Director,
-    ICollection<ScreeningDto> Screenings
+    List<ScreeningDto> Screenings
 );

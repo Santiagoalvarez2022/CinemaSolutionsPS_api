@@ -1,12 +1,13 @@
-using CinemaSolutionApi.Entities;
-using CinemaSolutionApi.Helpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using CinemaSolutionApi.Entities;
 
 namespace CinemaSolutionApi.Data;
 
-public class CinemaSolutionContext(DbContextOptions<CinemaSolutionContext> options) : DbContext(options)
+public class CinemaSolutionContext : IdentityDbContext
 {
+    public CinemaSolutionContext(DbContextOptions<CinemaSolutionContext> options) : base(options) { }
     public DbSet<Movie> Movies { get; set; }
     public DbSet<Director> Directors { get; set; }
     public DbSet<Screening> Screenings { get; set; }
@@ -14,12 +15,10 @@ public class CinemaSolutionContext(DbContextOptions<CinemaSolutionContext> optio
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .HasIndex(user => user.Username)
-            .IsUnique();
+        base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<User>()
-            .HasIndex(user => user.Email)
-            .IsUnique();
+        modelBuilder.Entity<Movie>()
+        .HasIndex(m => m.Title)
+        .IsUnique();
     }
 }

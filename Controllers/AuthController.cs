@@ -16,7 +16,7 @@ namespace CinemaSolutionApi.Controllers
             _authService = authService;
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Post(CreateUserDto user)
+        public async Task<IActionResult> Post(SignUpUserDto user)
         {
             try
             {
@@ -40,7 +40,11 @@ namespace CinemaSolutionApi.Controllers
             try
             {
                 var result = await _authService.LogIn(user);
-                return Ok(result);
+                return Ok(new
+                {
+                    tkn_cinema = result[0],
+                    username = result[1],
+                });
             }
             catch (ValidationEx ex)
             {
@@ -51,5 +55,6 @@ namespace CinemaSolutionApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
     }
 }
