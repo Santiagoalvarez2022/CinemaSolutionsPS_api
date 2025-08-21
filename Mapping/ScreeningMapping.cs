@@ -2,7 +2,7 @@ using CinemaSolutionApi.Dtos.Screening;
 using CinemaSolutionApi.Entities;
 
 namespace CinemaSolutionApi.Mapping;
-//
+
 public static class ScreeningMapping
 {
     public static Screening ToEntity(this CreateScreeningDto screening)
