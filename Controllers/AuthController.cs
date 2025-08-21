@@ -27,10 +27,13 @@ namespace CinemaSolutionApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (IdentityValidationEx ex)
+            {
+                return BadRequest(new { errors = ex.Errors });
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-
             }
         }
 

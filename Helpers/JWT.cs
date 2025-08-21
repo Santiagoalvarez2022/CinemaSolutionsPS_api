@@ -18,6 +18,7 @@ public class JWT
 	{
 		var userClaims = new List<Claim>
 		{
+			new Claim("UserId", user.Id),
 			new Claim("username", user.UserName),
 		};
 

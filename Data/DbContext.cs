@@ -12,6 +12,7 @@ public class CinemaSolutionContext : IdentityDbContext
     public DbSet<Director> Directors { get; set; }
     public DbSet<Screening> Screenings { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Ticket> Tickets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -3,6 +3,7 @@ using System;
 using CinemaSolutionApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CinemaSolutionApi.Migrations
 {
     [DbContext(typeof(CinemaSolutionContext))]
-    partial class CinemaSolutionContextModelSnapshot : ModelSnapshot
+    [Migration("20250821121949_addTicketEntitie")]
+    partial class addTicketEntitie
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,7 +127,7 @@ namespace CinemaSolutionApi.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Ticket");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -370,7 +373,7 @@ namespace CinemaSolutionApi.Migrations
             modelBuilder.Entity("CinemaSolutionApi.Entities.Ticket", b =>
                 {
                     b.HasOne("CinemaSolutionApi.Entities.Screening", "Screening")
-                        .WithMany("Tickets")
+                        .WithMany()
                         .HasForeignKey("ScreeningId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -445,11 +448,6 @@ namespace CinemaSolutionApi.Migrations
             modelBuilder.Entity("CinemaSolutionApi.Entities.Movie", b =>
                 {
                     b.Navigation("Screenings");
-                });
-
-            modelBuilder.Entity("CinemaSolutionApi.Entities.Screening", b =>
-                {
-                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("CinemaSolutionApi.Entities.User", b =>

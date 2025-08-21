@@ -40,7 +40,7 @@ namespace CinemaSolutionApi.Controllers
         }
 
         [HttpGet("user")]
-        // [Authorize(Roles = "SysAdmin")]
+        [Authorize(Roles = "SysAdmin")]
         public async Task<IActionResult> Get()
         {
             try
@@ -63,7 +63,7 @@ namespace CinemaSolutionApi.Controllers
         }
 
         [HttpDelete("user/{id}")]
-        // [Authorize(Roles = "SysAdmin")]
+        [Authorize(Roles = "SysAdmin")]
         public async Task<IActionResult> Delete(string id)
         {
             try
@@ -86,7 +86,7 @@ namespace CinemaSolutionApi.Controllers
         }
 
         [HttpPut("user/{id}")]
-        // [Authorize(Roles = "SysAdmin")]
+        [Authorize(Roles = "SysAdmin")]
         public async Task<IActionResult> Put(string id, CreateUserDto newValues)
         {
             try

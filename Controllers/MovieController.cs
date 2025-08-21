@@ -2,10 +2,13 @@ using CinemaSolutionApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using CinemaSolutionApi.Helpers;
 using CinemaSolutionApi.Dtos.Movie;
+using Microsoft.AspNetCore.Authorization;
+
 namespace CinemaSolutionApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "SysAdmin,CinemaAdmin")]
     public class MovieController : ControllerBase
     {
         private readonly MovieService _movieService;
@@ -14,6 +17,7 @@ namespace CinemaSolutionApi.Controllers
             _movieService = movieService;
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
             try
@@ -52,6 +56,8 @@ namespace CinemaSolutionApi.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
+
         public async Task<IActionResult> Get(int id)
         {
             try

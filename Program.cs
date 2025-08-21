@@ -68,6 +68,7 @@ builder.Services.AddScoped<MovieService>();
 builder.Services.AddScoped<ScreeningService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<ClientService>();
 
 builder.Services.AddScoped<JWT>();
 

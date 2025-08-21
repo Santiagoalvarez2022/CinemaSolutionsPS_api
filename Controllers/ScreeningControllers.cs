@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CinemaSolutionApi.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "SysAdmin,CinemaAdmin")]
     public class ScreeningController : ControllerBase
     {
         private readonly ScreeningService _screeningService;

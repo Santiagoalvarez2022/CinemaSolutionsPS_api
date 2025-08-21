@@ -2,7 +2,6 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using CinemaSolutionApi.Dtos.Admin;
-using CinemaSolutionApi.Dtos.User;
 using CinemaSolutionApi.Entities;
 using CinemaSolutionApi.Helpers;
 using CinemaSolutionApi.Mapping;
@@ -14,12 +13,10 @@ public class AdminService
 {
     private readonly CinemaSolutionContext _dbContext;
     private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-    public AdminService(CinemaSolutionContext dbContext, UserManager<User> userManager, SignInManager<User> signInManager)
+    public AdminService(CinemaSolutionContext dbContext, UserManager<User> userManager)
     {
         _dbContext = dbContext;
         _userManager = userManager;
-        _signInManager = signInManager;
     }
 
     public async Task<List<GetUserDto>> GetUsers()
@@ -35,7 +32,6 @@ public class AdminService
             var roles = await _userManager.GetRolesAsync(user);
             listUsers.Add(user.ToGetUser(roles));
         }
-
         return listUsers;
     }
 
@@ -69,7 +65,6 @@ public class AdminService
         user.Name = newValues.Name;
         user.LastName = newValues.LastName;
         user.Email = newValues.Email;
-        //nuevos valores
         var resultModifyUser = await _userManager.UpdateAsync(user);
         if (!resultModifyUser.Succeeded)
         {
@@ -79,17 +74,13 @@ public class AdminService
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var resultResetPassword = await _userManager.ResetPasswordAsync(user, token, newValues.Password);
-        //ver si es mail es correcto porq la base de datos lo guardo
-        // "email": "string@modify1"
 
         if (!resultResetPassword.Succeeded)
         {
             var formattedErrors = IdentityErrorHelper.FormatErrors(resultResetPassword.Errors);
             throw new IdentityValidationEx(formattedErrors);
         }
-        //asignar nuevos roles
         var roles = await _userManager.GetRolesAsync(user);
-        //roles son los roles actuales, 
         if (roles[0] != newValues.Role)
         {
             var resultRemoveRole = await _userManager.RemoveFromRoleAsync(user, roles[0]);

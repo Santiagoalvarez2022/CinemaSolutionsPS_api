@@ -10,4 +10,5 @@ public class Screening
     public DateTime FinishScreening { get; set; }
     [ForeignKey("MovieId")]
     public Movie? Movie { get; set; }
+    public List<Ticket> Tickets { get; set; } = new();
 }

@@ -1,6 +1,7 @@
 using CinemaSolutionApi.Entities;
 using CinemaSolutionApi.Dtos.User;
 using CinemaSolutionApi.Dtos.Admin;
+using CinemaSolutionApi.Dtos.Ticket;
 
 namespace CinemaSolutionApi.Mapping;
 
@@ -36,4 +37,6 @@ public static class UserMapping
             user.UserName
         );
     }
+
+
 }
