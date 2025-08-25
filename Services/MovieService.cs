@@ -25,13 +25,37 @@ public class MovieService
     }
     public async Task<MovieDetailsDto> GetById(int id)
     {
+        var movie = await FindMovieById(id);
+        return movie.ToDetailsDto();
+    }
+
+    public async Task<Movie> FindMovieById(int id)
+    {
+
+        var errors = new Dictionary<string, string[]>
+        {
+            { "Id", new[] { $"Movie not found" } }
+        };
         var movie = await _dbContext.Movies
+        .AsNoTracking()
         .Where(m => m.Id == id)
         .Include(m => m.Screenings)
         .Include(m => m.Director)
+        .AsSplitQuery()
         .FirstOrDefaultAsync() ?? throw new ValidationEx("Movie not found.");
-        return movie.ToDetailsDto();
+
+        return movie;
     }
+
+    // public async Task<Movie> FindMovieById(int id)
+    // {
+    //     var errors = new Dictionary<string, string[]>
+    //     {
+    //         { "Id", new[] { $"Movie not found" } }
+    //     };
+
+    //     return await _dbContext.Movies.FirstOrDefaultAsync(m => m.Id == id) ?? throw new ValidationExProperties(errors);
+    // }
     public async Task<MovieDetailsDto> CreateMovie(MovieDto newMovie)
     {
         await ValidateTitle(newMovie.Title, null);
@@ -56,19 +80,12 @@ public class MovieService
         movie.Duration = newMovie.Duration;
         movie.Image = newMovie.Image;
         movie.Title = newMovie.Title;
+        movie.IsInternational = newMovie.IsInternational;
 
         await _dbContext.SaveChangesAsync();
         return movie.ToDetailsDto();
     }
-    public async Task<Movie> FindMovieById(int id)
-    {
-        var errors = new Dictionary<string, string[]>
-        {
-            { "Id", new[] { $"Movie not found" } }
-        };
 
-        return await _dbContext.Movies.FirstOrDefaultAsync(m => m.Id == id) ?? throw new ValidationExProperties(errors);
-    }
     public async Task ValidateTitle(string title, int? id)
     {
         var errors = new Dictionary<string, string[]>
@@ -90,12 +107,18 @@ public class MovieService
 
     public async Task DeleteMovie(int id)
     {
-        var movie = await FindMovieById(id);
+        var errors = new Dictionary<string, string[]>
+        {
+            { "Id", new[] { $"Movie not found" } }
+        };
+
+        var movie = await _dbContext.Movies
+        .FirstOrDefaultAsync(m => m.Id == id) ?? throw new ValidationExProperties(errors);
+
         _dbContext.Movies.Remove(movie);
         await _dbContext.SaveChangesAsync();
 
     }
-
     public async Task<List<DirectorInfoDto>> GetDirectors()
     {
         return await _dbContext.Directors

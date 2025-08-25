@@ -3,7 +3,6 @@ namespace CinemaSolutionApi.Helpers;
 
 public static class IdentityErrorHelper
 {
-
     public static Dictionary<string, List<string>> FormatErrors(IEnumerable<IdentityError> errors)
     {
         var error = new Dictionary<string, List<string>>();

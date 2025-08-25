@@ -1,7 +1,5 @@
 using CinemaSolutionApi.Dtos.User;
 using CinemaSolutionApi.Data;
-using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
 using CinemaSolutionApi.Mapping;
 using CinemaSolutionApi.Entities;
 using CinemaSolutionApi.Helpers;
@@ -40,7 +38,7 @@ public class AuthService
         return user.UserResponseDto();
     }
 
-    public async Task<List<string>> LogIn(LogInDto logInData)
+    public async Task<LogInResponseDto> LogIn(LogInDto logInData)
     {
         if (string.IsNullOrWhiteSpace(logInData.Username) || string.IsNullOrWhiteSpace(logInData.Password)) throw new ValidationEx("Username and password are required.");
 
@@ -55,6 +53,6 @@ public class AuthService
 
         var token = _jwt.CreateToken(user, roles);
 
-        return [token, user.UserName];
+        return new LogInResponseDto(token);
     }
 }

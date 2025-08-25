@@ -19,6 +19,10 @@ public class AdminService
         _userManager = userManager;
     }
 
+    public async Task<User> GetUser(string id)
+    {
+        return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception("User not found");
+    }
     public async Task<List<GetUserDto>> GetUsers()
     {
         var users = await _userManager.Users
@@ -35,7 +39,7 @@ public class AdminService
         return listUsers;
     }
 
-    public async Task<bool> CreateUser(CreateUserDto newUser)
+    public async Task CreateUser(CreateUserDto newUser)
     {
         var user = new User()
         {
@@ -55,47 +59,19 @@ public class AdminService
 
         await _userManager.AddToRoleAsync(user, newUser.Role);
 
-        return true;
     }
     public async Task<User> ModifyUser(string id, CreateUserDto newValues)
     {
         var user = await GetUser(id);
+
         user.UserName = newValues.Username;
         user.Email = newValues.Email;
         user.Name = newValues.Name;
         user.LastName = newValues.LastName;
         user.Email = newValues.Email;
-        var resultModifyUser = await _userManager.UpdateAsync(user);
-        if (!resultModifyUser.Succeeded)
-        {
-            var formattedErrors = IdentityErrorHelper.FormatErrors(resultModifyUser.Errors);
-            throw new IdentityValidationEx(formattedErrors);
-        }
 
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var resultResetPassword = await _userManager.ResetPasswordAsync(user, token, newValues.Password);
+        await ValidateModifyUser(user, newValues);
 
-        if (!resultResetPassword.Succeeded)
-        {
-            var formattedErrors = IdentityErrorHelper.FormatErrors(resultResetPassword.Errors);
-            throw new IdentityValidationEx(formattedErrors);
-        }
-        var roles = await _userManager.GetRolesAsync(user);
-        if (roles[0] != newValues.Role)
-        {
-            var resultRemoveRole = await _userManager.RemoveFromRoleAsync(user, roles[0]);
-            if (!resultRemoveRole.Succeeded)
-            {
-                var formattedErrors = IdentityErrorHelper.FormatErrors(resultRemoveRole.Errors);
-                throw new IdentityValidationEx(formattedErrors);
-            }
-            var resultAddRole = await _userManager.AddToRoleAsync(user, newValues.Role);
-            if (!resultAddRole.Succeeded)
-            {
-                var formattedErrors = IdentityErrorHelper.FormatErrors(resultAddRole.Errors);
-                throw new IdentityValidationEx(formattedErrors);
-            }
-        }
         return user;
     }
 
@@ -105,8 +81,26 @@ public class AdminService
         await _userManager.DeleteAsync(user);
     }
 
-    public async Task<User> GetUser(string id)
+
+
+    public async Task ValidateModifyUser(User user, CreateUserDto newValues)
     {
-        return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception("User not found");
+        var resultModifyUser = await _userManager.UpdateAsync(user);
+        if (!resultModifyUser.Succeeded) throw new IdentityValidationEx(IdentityErrorHelper.FormatErrors(resultModifyUser.Errors));
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var resultResetPassword = await _userManager.ResetPasswordAsync(user, token, newValues.Password);
+
+        if (!resultResetPassword.Succeeded) throw new IdentityValidationEx(IdentityErrorHelper.FormatErrors(resultResetPassword.Errors));
+
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles[0] != newValues.Role)
+        {
+            var resultRemoveRole = await _userManager.RemoveFromRoleAsync(user, roles[0]);
+            if (!resultRemoveRole.Succeeded) throw new IdentityValidationEx(IdentityErrorHelper.FormatErrors(resultRemoveRole.Errors));
+
+            var resultAddRole = await _userManager.AddToRoleAsync(user, newValues.Role);
+            if (!resultAddRole.Succeeded) throw new IdentityValidationEx(IdentityErrorHelper.FormatErrors(resultAddRole.Errors));
+        }
     }
 }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CinemaSolutionApi.Migrations
 {
     [DbContext(typeof(CinemaSolutionContext))]
-    [Migration("20250812155009_addRolesSeed")]
-    partial class addRolesSeed
+    [Migration("20250825165243_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -75,6 +75,9 @@ namespace CinemaSolutionApi.Migrations
 
                     b.HasIndex("DirectorId");
 
+                    b.HasIndex("Title")
+                        .IsUnique();
+
                     b.ToTable("Movies");
                 });
 
@@ -103,6 +106,30 @@ namespace CinemaSolutionApi.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("Screenings");
+                });
+
+            modelBuilder.Entity("CinemaSolutionApi.Entities.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ScreeningId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScreeningId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -345,6 +372,25 @@ namespace CinemaSolutionApi.Migrations
                     b.Navigation("Movie");
                 });
 
+            modelBuilder.Entity("CinemaSolutionApi.Entities.Ticket", b =>
+                {
+                    b.HasOne("CinemaSolutionApi.Entities.Screening", "Screening")
+                        .WithMany("Tickets")
+                        .HasForeignKey("ScreeningId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CinemaSolutionApi.Entities.User", "User")
+                        .WithMany("Tickets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Screening");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -404,6 +450,16 @@ namespace CinemaSolutionApi.Migrations
             modelBuilder.Entity("CinemaSolutionApi.Entities.Movie", b =>
                 {
                     b.Navigation("Screenings");
+                });
+
+            modelBuilder.Entity("CinemaSolutionApi.Entities.Screening", b =>
+                {
+                    b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("CinemaSolutionApi.Entities.User", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }

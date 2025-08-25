@@ -3,7 +3,7 @@ namespace CinemaSolutionApi.Entities;
 
 public class Ticket
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public int Id { get; set; }
     [ForeignKey("UserId")]
     public User User { get; set; }
     [ForeignKey("ScreeningId")]

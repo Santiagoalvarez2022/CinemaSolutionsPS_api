@@ -107,9 +107,11 @@ namespace CinemaSolutionApi.Migrations
 
             modelBuilder.Entity("CinemaSolutionApi.Entities.Ticket", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ScreeningId")
                         .HasColumnType("integer");

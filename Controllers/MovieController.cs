@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CinemaSolutionApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     [Authorize(Roles = "SysAdmin,CinemaAdmin")]
     public class MovieController : ControllerBase
     {
@@ -140,6 +140,5 @@ namespace CinemaSolutionApi.Controllers
 
             }
         }
-
     };
 }

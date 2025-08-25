@@ -11,35 +11,33 @@ namespace CinemaSolutionApi.Services;
 public class ClientService
 {
     private readonly CinemaSolutionContext _dbContext;
-    private readonly UserManager<User> _userManager;
+    private readonly AdminService _adminService;
+    private readonly ScreeningService _screeningService;
 
-    public ClientService(CinemaSolutionContext dbContext, UserManager<User> userManager)
+    public ClientService(CinemaSolutionContext dbContext, AdminService adminService, ScreeningService screeningService)
     {
         _dbContext = dbContext;
-        _userManager = userManager;
-
+        _adminService = adminService;
+        _screeningService = screeningService;
     }
 
-    public async Task CreateTicket(CreateTicketDto newTicket)
-    {
-        var user = await GetUser(newTicket.IdUser);
-        var screening = await GetScreening(newTicket.IdScreening);
-        await ValidateLimitTicket(user.Id, screening.Id);
-        var ticket = new Ticket() { };
-        ticket.User = user;
-        ticket.Screening = screening;
-        await _dbContext.AddAsync(ticket);
-        await _dbContext.SaveChangesAsync();
-    }
-
-    public async Task<User> GetUser(string id)
-    {
-        return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id) ?? throw new Exception("User not found");
-    }
     public async Task<Screening> GetScreening(int id)
     {
         return await _dbContext.Screenings.FirstOrDefaultAsync(s => s.Id == id) ?? throw new Exception("Screening not found");
     }
+
+    public async Task CreateTicket(CreateTicketDto newTicket)
+    {
+        var ticket = new Ticket() { };
+        ticket.User = await _adminService.GetUser(newTicket.IdUser);
+        ticket.Screening = await _screeningService.GetScreening(newTicket.IdScreening);
+
+        await ValidateLimitTicket(ticket.User.Id, ticket.Screening.Id);
+
+        await _dbContext.AddAsync(ticket);
+        await _dbContext.SaveChangesAsync();
+    }
+
 
     public async Task ValidateLimitTicket(string idUser, int idScreening)
     {

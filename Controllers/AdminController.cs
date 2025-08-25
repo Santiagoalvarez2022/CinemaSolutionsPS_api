@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaSolutionApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "SysAdmin")]
     public class AdminController : ControllerBase
     {
         private readonly AdminService _adminService;
@@ -16,14 +17,13 @@ namespace CinemaSolutionApi.Controllers
             _adminService = adminService;
         }
 
-        [HttpPost("createuser")]
-        [Authorize(Roles = "SysAdmin")]
+        [HttpPost("user")]
         public async Task<IActionResult> Post(CreateUserDto newUser)
         {
             try
             {
-                var result = await _adminService.CreateUser(newUser);
-                return Ok(result);
+                await _adminService.CreateUser(newUser);
+                return Ok("The user was successfully created");
             }
             catch (ValidationEx ex)
             {
@@ -40,7 +40,6 @@ namespace CinemaSolutionApi.Controllers
         }
 
         [HttpGet("user")]
-        [Authorize(Roles = "SysAdmin")]
         public async Task<IActionResult> Get()
         {
             try
@@ -63,13 +62,12 @@ namespace CinemaSolutionApi.Controllers
         }
 
         [HttpDelete("user/{id}")]
-        [Authorize(Roles = "SysAdmin")]
         public async Task<IActionResult> Delete(string id)
         {
             try
             {
                 await _adminService.DeleteUser(id);
-                return Ok();
+                return Ok("The user was modify");
             }
             catch (ValidationEx ex)
             {
@@ -86,7 +84,6 @@ namespace CinemaSolutionApi.Controllers
         }
 
         [HttpPut("user/{id}")]
-        [Authorize(Roles = "SysAdmin")]
         public async Task<IActionResult> Put(string id, CreateUserDto newValues)
         {
             try

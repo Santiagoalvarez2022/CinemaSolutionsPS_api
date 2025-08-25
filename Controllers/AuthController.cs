@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaSolutionApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
@@ -42,12 +42,7 @@ namespace CinemaSolutionApi.Controllers
         {
             try
             {
-                var result = await _authService.LogIn(user);
-                return Ok(new
-                {
-                    tkn_cinema = result[0],
-                    username = result[1],
-                });
+                return Ok(await _authService.LogIn(user));
             }
             catch (ValidationEx ex)
             {
