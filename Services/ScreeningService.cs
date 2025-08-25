@@ -15,13 +15,9 @@ public class ScreeningService
         _dbContext = dbContext;
     }
 
-    public async Task<bool> DeleteScreening(int id)
+    public async Task<Screening> GetScreening(int id)
     {
-        var screening = await _dbContext.Screenings.FirstOrDefaultAsync(s => s.Id == id);
-        if (screening is null) return false;
-        _dbContext.Screenings.Remove(screening);
-        await _dbContext.SaveChangesAsync();
-        return true;
+        return await _dbContext.Screenings.FirstOrDefaultAsync(s => s.Id == id) ?? throw new Exception("Screening not found");
     }
 
     public async Task<ScreeningDto> AddScreening(CreateScreeningDto newScreening)
@@ -46,8 +42,7 @@ public class ScreeningService
     }
     public async Task<ScreeningDto> ModifyScreening(int id, CreateScreeningDto newScreening)
     {
-        var screening = await _dbContext.Screenings.FirstOrDefaultAsync(s => s.Id == id);
-        if (screening == null) throw new ValidationEx("Screening not found.");
+        var screening = await GetScreening(id);
 
         ValidateFields(newScreening);
         await ValidateOverlap(newScreening, id);
@@ -69,6 +64,18 @@ public class ScreeningService
 
         await _dbContext.SaveChangesAsync();
         return screening.ToDto();
+    }
+
+
+    public async Task<bool> DeleteScreening(int id)
+    {
+        var screening = await GetScreening(id);
+
+        _dbContext.Screenings.Remove(screening);
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 
     public async Task<Movie> MovieExists(int id)
@@ -110,7 +117,7 @@ public class ScreeningService
 
         if (screening.Price <= 0) throw new ValidationEx("The price must be positive and greater than 0");
 
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         if (screening.StartScreening < now) throw new ValidationEx("This date is not valid because it is in the past, try again");
 
         if (screening.StartScreening == screening.FinishScreening) throw new ValidationEx("The startscreening and finishscreening can't be the same");

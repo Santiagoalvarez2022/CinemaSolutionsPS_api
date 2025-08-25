@@ -14,9 +14,22 @@ public static class MovieMapping
             movie.Duration,
             movie.IsInternational,
             movie.Image,
-            Director
+            Director,
+            movie.Director.Id
         );
     }
+
+    public static Movie toEntity(this MovieDto movieDto)
+    {
+        return new Movie()
+        {
+            Title = movieDto.Title,
+            Duration = movieDto.Duration,
+            IsInternational = movieDto.IsInternational,
+            Image = movieDto.Image,
+        };
+    }
+
     public static MovieDetailsDto ToDetailsDto(this Movie movie)
     {
         var Director = movie.Director.Name + " " + movie.Director.LastName;

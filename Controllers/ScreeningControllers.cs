@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CinemaSolutionApi.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "SysAdmin,CinemaAdmin")]
     public class ScreeningController : ControllerBase
     {
         private readonly ScreeningService _screeningService;
@@ -53,7 +53,7 @@ namespace CinemaSolutionApi.Controllers
             try
             {
                 var result = await _screeningService.ModifyScreening(id, screening);
-                return Ok(result);
+                return Ok();
             }
             catch (ValidationEx ex)
             {

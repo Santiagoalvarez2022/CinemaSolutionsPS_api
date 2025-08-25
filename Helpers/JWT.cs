@@ -14,13 +14,16 @@ public class JWT
 		_configuration = configuration;
 	}
 
-	public string CreateToken(User user)
+	public string CreateToken(User user, IList<string> roles)
 	{
 		var userClaims = new List<Claim>
 		{
-			new Claim(ClaimTypes.NameIdentifier, user.Username),
-			new Claim(ClaimTypes.Email, user.Email)
+			new Claim("UserId", user.Id),
+			new Claim("username", user.UserName),
 		};
+
+		userClaims.AddRange(roles.Select(role => new Claim("role", role)));
+
 		var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]!));
 		var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
 

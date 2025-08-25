@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaSolutionApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
@@ -16,7 +16,7 @@ namespace CinemaSolutionApi.Controllers
             _authService = authService;
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Post(CreateUserDto user)
+        public async Task<IActionResult> Post(SignUpUserDto user)
         {
             try
             {
@@ -27,10 +27,13 @@ namespace CinemaSolutionApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (IdentityValidationEx ex)
+            {
+                return BadRequest(new { errors = ex.Errors });
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-
             }
         }
 
@@ -39,8 +42,7 @@ namespace CinemaSolutionApi.Controllers
         {
             try
             {
-                var result = await _authService.LogIn(user);
-                return Ok(result);
+                return Ok(await _authService.LogIn(user));
             }
             catch (ValidationEx ex)
             {
@@ -51,5 +53,6 @@ namespace CinemaSolutionApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
     }
 }

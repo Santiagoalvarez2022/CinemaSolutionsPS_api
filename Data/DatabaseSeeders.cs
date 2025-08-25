@@ -1,12 +1,17 @@
 using CinemaSolutionApi.Data;
 using CinemaSolutionApi.Entities;
+using Microsoft.AspNetCore.Identity;
 public class DatabaseSeeder
 {
     private readonly CinemaSolutionContext _context;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<User> _userManager;
 
-    public DatabaseSeeder(CinemaSolutionContext context)
+    public DatabaseSeeder(CinemaSolutionContext context, RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
     {
         _context = context;
+        _roleManager = roleManager;
+        _userManager = userManager;
     }
 
 
@@ -37,21 +42,13 @@ public class DatabaseSeeder
 
             var movies = new List<Movie>
             {
-                new Movie {Director=directors[0],Title = "The Secret of the Mirror", Duration = 115, IsInternational = false,  Image = "https://i.ibb.co/9Hg54sMZ/Gemini-Generated-Image-wdz3jywdz3jywdz3.png" },
-                new Movie {Director=directors[2],Title = "The Forgotten Shadow", Duration = 98, IsInternational = false,    Image = "https://i.ibb.co/0pf183VG/Gemini-Generated-Image-wdz3jywdz3jywdz3-1.png" },
-                new Movie {Director=directors[3],Title = "Journey to the Star Heart", Duration = 102, IsInternational = true,   Image = "https://i.ibb.co/HDnnNd5t/Gemini-Generated-Image-wdz3jywdz3jywdz3-2.png" },
-                new Movie {Director=directors[0],Title = "The Secret of the Mirror 2", Duration = 100, IsInternational = false,   Image = "https://i.ibb.co/8DJdFYwJ/unnamed-6.png" },
-                new Movie {Director=directors[4],Title = "Chronicles of the Hidden City", Duration = 105, IsInternational = false,    Image = "https://i.ibb.co/MrkwZZz/Gemini-Generated-Image-wdz3jywdz3jywdz3-3.png" },
-                new Movie {Director=directors[5],Title = "The Dragon's Last Breath", Duration = 60, IsInternational = true,    Image = "https://i.ibb.co/nMZV6ZC6/Gemini-Generated-Image-wdz3jywdz3jywdz3-4.png" },
-                new Movie {Director=directors[6],Title = "Nights of Mist", Duration = 90, IsInternational = true,    Image = "https://i.ibb.co/3YjvSLQX/unnamed.png" },
-                new Movie {Director=directors[7],Title = "The Enigma of the Hourglass", Duration = 130, IsInternational = false,    Image = "https://i.ibb.co/4n92fjpr/Gemini-Generated-Image-wdz3jywdz3jywdz3-5.png" },
-                new Movie {Director=directors[8],Title = "The Guardians of the Forest", Duration = 85, IsInternational = true,    Image = "https://i.ibb.co/9HVvNRY8/unnamed-1.png" },
-                new Movie {Director=directors[9],Title = "Song of Sirens", Duration = 110, IsInternational = false,    Image = "https://i.ibb.co/My8bMQyf/unnamed-2.png" },
-                new Movie {Director=directors[1],Title = "The Legend of the Awakening", Duration = 155, IsInternational = true,    Image = "https://i.ibb.co/901bbwy/Gemini-Generated-Image-wdz3jywdz3jywdz3-7.png" },
-                new Movie {Director=directors[10],Title = "Echoes in the Void", Duration = 100, IsInternational = true,    Image = "https://i.ibb.co/vvd09nkH/Gemini-Generated-Image-6c9kjd6c9kjd6c9k-1.png" },
-                new Movie {Director=directors[11],Title = "The Art of Flying", Duration = 125, IsInternational = false,    Image = "https://i.ibb.co/bgV5f4Hh/unnamed-3.png" },
-                new Movie {Director=directors[12],Title = "Whispers of the Past", Duration = 95, IsInternational = true,    Image = "https://i.ibb.co/YT1d7NB2/Gemini-Generated-Image-6c9kjd6c9kjd6c9k-2.png" },
-                new Movie {Director=directors[13],Title = "The Dance of the Fireflies", Duration = 108, IsInternational = true,   Image = "https://i.ibb.co/8nqJHMbm/unnamed-4.png" }
+                new Movie {Director=directors[0],Title = "The Secret of the Mirror", Duration = 115, IsInternational = false,  Image = "https://i.ibb.co/S44Sz6z6/Gemini-Generated-Image-wdz3jywdz3jywdz3.png" },
+                new Movie {Director=directors[0],Title = "The Secret of the Mirror 2", Duration = 100, IsInternational = false,   Image = "https://i.ibb.co/wN6jnLmf/unnamed-6.png"  },
+                new Movie { Director = directors[6], Title = "Nights of Mist", Duration = 90, IsInternational = true, Image = "https://i.ibb.co/VWFHGbGt/Gemini-Generated-Image-6c9kjd6c9kjd6c9k.png" },
+                new Movie { Director = directors[8], Title = "The Guardians of the Forest", Duration = 85, IsInternational = true, Image = "https://i.ibb.co/KjQGSPW5/unnamed-1.png" },
+                new Movie { Director = directors[9], Title = "Song of Sirens", Duration = 110, IsInternational = false, Image = "https://i.ibb.co/qMnd1w15/unnamed-2.png" },
+                new Movie { Director = directors[1], Title = "The Legend of the Awakening", Duration = 155, IsInternational = true, Image = "https://i.ibb.co/60q8DDd4/Gemini-Generated-Image-wdz3jywdz3jywdz3-6.png" },
+                new Movie { Director = directors[11], Title = "The Art of Flying", Duration = 125, IsInternational = false, Image = "https://i.ibb.co/WvbBKhfp/unnamed-3.png" },
             };
 
             await _context.Movies.AddRangeAsync(movies);
